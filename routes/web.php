@@ -228,6 +228,16 @@ Route::get('/ProsesFileRCNBank', function (Request $request) {
     }
 });
 
+//test FTP http://mivp2apstpln-web-v3.test/test-ftp
+Route::get('/test-ftp', function () {
+    try {
+        $files = Storage::disk('ftp')->allFiles('/');
+        return response()->json(['status' => 'success', 'files' => $files]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+});
+
 //4a2  baca list file *.rcn yang ada fi ftp
 //=======================================================================
 Route::get('/list-ftp-files-rcn', [CProeseMIV::class, 'get_list_ftp_files_rcn'])->name('mproses.daftar-file-ftp-rcn');

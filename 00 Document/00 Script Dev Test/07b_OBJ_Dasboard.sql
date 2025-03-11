@@ -1,0 +1,9 @@
+VARIABLE TMPCUR_OUT REFCURSOR;
+DECLARE
+  pesan varchar2(1000);
+--  TMPCUR_OUT SYS_REFCURSOR;
+BEGIN
+ VER_MON_LAP.monlap_mivflag_plnvsbank_pusat('202404', :TMPCUR_OUT, pesan);
+ DBMS_OUTPUT.PUT_LINE(pesan);
+END;
+PRINT TMPCUR_OUT;

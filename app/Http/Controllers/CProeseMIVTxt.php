@@ -31,7 +31,7 @@ class CProeseMIVTxt extends Controller
         $mydata = [
             'status'            => ($MyData1['kode'] !== null) ? $MyData1['kode'] : '400',
             'message'           => ($MyData1['message'] !== null) ? $MyData1['message'] : 'Data Tidak ditemukan',
-            'nama_file'        => $MyData1,
+            'nama_file'         => $MyData1,
             // 'nousulan'          => $nousulan,
             // 'tglfile'           => $tglfile,
             // 'token'             => $request->Session()->get('_datalogin.data.token')

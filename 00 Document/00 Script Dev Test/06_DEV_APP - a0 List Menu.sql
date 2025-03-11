@@ -1,0 +1,9 @@
+VARIABLE TMPCUR_OUT REFCURSOR;
+DECLARE
+  pesan varchar2(1000);
+--  TMPCUR_OUT SYS_REFCURSOR;
+BEGIN
+ :TMPCUR_OUT := VER_APP_MENU.list_menu('adijewel79@yahoo.com',pesan);
+ DBMS_OUTPUT.PUT_LINE(pesan);
+END;
+PRINT TMPCUR_OUT;

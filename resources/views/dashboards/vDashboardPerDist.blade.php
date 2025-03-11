@@ -448,10 +448,14 @@
                     // Menyembunyikan spinner dan overlay setelah proses selesai
                     $('#loadingSpinner').hide();
                     $('.overlay').hide();
-                    // alert("Data berhasil diproses!");
                 }, 1000);
-                ShowMsgSm('Error', 'Terjadi kesalahan : ' + error, 'MB_CLOSE');
-            },
+                
+                 if (error === 'parsererror') {
+                     ShowMsgSm('Error', 'Sesion Aplikasi Habis Silahkan Login Ulang !', 'MB_CLOSE');
+                 } else {
+                    ShowMsgSm('Error', 'Terjadi kesalahan : ' + error, 'MB_CLOSE');
+                 }
+            }
         });
 
     });

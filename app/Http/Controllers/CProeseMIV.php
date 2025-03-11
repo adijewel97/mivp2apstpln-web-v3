@@ -20,10 +20,11 @@ class CProeseMIV extends Controller
                 ]
             )->json();
 
+        $kdstatus = 'Sukses-...';
         $mstbanks = $mstbankmiv['data'];
         $Mstbanksmiv   = [];
         $MstProduks    = array('POSTPAID', 'PREPAID', 'NTLS');
-        $directories = [];
+        $directories   = [];
         foreach ($mstbanks as $mstbank) {
             // if ($mstbank['KODE_BANK'] != 'ALL') {
             if ($mstbank['KODE_BANK'] == '200') {
@@ -51,26 +52,36 @@ class CProeseMIV extends Controller
         $mydatafile = [];
         foreach ($directories as $directory) {
             $files = Storage::disk('ftp')->allFiles($directory);
-            if (!empty($files)) {
-                foreach ($files as $file) {
-                    if (pathinfo($file, PATHINFO_EXTENSION) === 'rcn') {
-                        $namafile = pathinfo($file, PATHINFO_BASENAME);
-                        $kdstatus = '200';
-                        $mydatafile[] = [
-                            'path'      => $directory,
-                            'file'      => $namafile,
-                            'status'    => 'Sukses Baca File di FTP'
-                        ];
+            try {
+                if (!empty($files)) {
+                    foreach ($files as $file) {
+                        if (pathinfo($file, PATHINFO_EXTENSION) === 'rcn') {
+                            $namafile = pathinfo($file, PATHINFO_BASENAME);
+                            $kdstatus = '200';
+                            $mydatafile[] = [
+                                'path'      => $directory,
+                                'file'      => $namafile,
+                                'status'    => 'Sukses Baca File di FTP'
+                            ];
+                        }
                     }
-                }
+                } 
+                // else {
+                //     $mydatafile[] = [
+                //         'path'   => $directory,
+                //         'file'   => '',
+                //         'status' => 'Tidak ada file .rcn di direktori ini'
+                //     ];
+                // }
+            } catch (\Exception $e) {
+                $mydatafile[] = [
+                    'path'   => $directory,
+                    'file'   => '',
+                    'status' => 'Gagal membaca direktori: ' . $e->getMessage()
+                ];
             }
-            // else {
-            //     $kdstatus = '500';
-            //     $namafile = 'File Ftp tidak Terdeteksi.';
-            // }
         }
 
-        // $mydata =  $files;
         $mydata = [
             'status'            =>  $kdstatus,
             'message'           => $msg ?? "Files Sukses di Tampilkan !",

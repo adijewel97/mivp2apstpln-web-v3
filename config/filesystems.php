@@ -54,16 +54,15 @@ return [
         ],
 
         'ftp' => [
-            'driver' => 'ftp',
-            'host' => env('FTP_HOST'),
+            'driver'   => 'ftp',
+            'host'     => env('FTP_HOST'),
             'username' => env('FTP_USERNAME'),
             'password' => env('FTP_PASSWORD'),
-            'port'     => env('FTP_PORT'),
-            'root' => env('FTP_ROOT'),
+            'port'     => env('FTP_PORT', 21),
+            'root'     => env('FTP_ROOT'),
             'ssl'      => env('FTP_SSL', false),
             'timeout'  => env('FTP_TIMEOUT', 10)
-        ],
-
+        ]
     ],
 
     /*

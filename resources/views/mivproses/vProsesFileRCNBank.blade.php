@@ -140,7 +140,7 @@
         // alert('chek 1');
         function TampilkanListFileRCN() {
             $.ajax({
-                url: "{{ route('mproses.proses-nama-file-txt') }}",
+                url: "{{ route('mproses.daftar-file-ftp-rcn') }}",
                 dataType: 'json',
                 success: function(respon) {
                     console.log(respon);
@@ -161,9 +161,14 @@
                     }
                 },
                 error: function(req, status, error) {
-                    var err = req.responseText.Message;
-                    console.log(err);
-                    $("#pathfile").html('');
+                    try {
+                        let errResponse = JSON.parse(req.responseText); // Parse JSON
+                        console.log("Error Response:", errResponse.message); // Ambil "message"
+                        ShowMsgSm('Error','Respon - '+errResponse.message);
+                    } catch (e) {
+                        console.log("Error parsing response:", req.responseText); // Jika bukan JSON
+                        ShowMsgSm('Error', 'Respon - '+req.responseText);
+                    }
                 }
             });
         }
@@ -175,92 +180,64 @@
             $('#mytable').DataTable({
                 data: JSON.parse(json),
                 processing: true,
-                // serverSide: true,
                 destroy: true,
-                // responsive: true,
                 autoWidth: true,
                 searching: true,
-                paging: false,
+                paging: true, // Aktifkan paging
+                pageLength: 10, // Atur jumlah baris per halaman (opsional)
                 language: {
                     'loadingRecords': '&nbsp;',
                     'processing': 'Loading...',
                     'emptyTable': 'No records are available',
                 },
-                // scrollY: "300px",
                 scrollX: true,
-                // scrollCollapse: true,
-                // fixedColumns: {
-                //     left: 2
-                // },
                 dom: 'Blfrtip',
-                buttons: [{
+                buttons: [
+                    {
                         extend: 'excelHtml5',
                         text: '<i class="fa fa-file-excel"></i> Excel',
-                        titleAttr: 'Excel',
                         className: 'dt-button buttons-excel buttons-html5 btn btn-xs btn-success',
-                        // className: 'green glyphicon glyphicon-list-alt',
                         footer: true,
                         title: 'DAFTAR PROSES DOWNLOAD FILE RCN BANK MIV',
-                        filename: 'MIV-DownloadFileRcnBank_', /// + DateTime.Now.ToString("ddMMMyyyy"),
+                        filename: 'MIV-DownloadFileRcnBank_',
                         exportOptions: {
                             columns: "thead th:not(.noExport)",
                             rows: function(indx, rowData, domElement) {
                                 return $(domElement).css("display") != "none";
                             }
-                        },
-                        // customize: function(xlsx) {
-                        //     $sheet - > appendRow(2, array(
-                        //         'appended', 'appended'
-                        //     ));
-                        // }
-                        // exportOptions: {
-                        //     columns: [0, 1, 2, 3, 4, 5, 6, 7]
-                        // }
+                        }
                     },
                     {
                         extend: 'pdf',
                         footer: true,
-                        text: '<i class="fa fa-file-pdf"></i> PDF  ',
+                        text: '<i class="fa fa-file-pdf"></i> PDF',
                         className: 'dt-button buttons-excel buttons-html5 btn btn-xs btn-danger',
                         footer: true,
                         title: 'DAFTAR PROSES DOWNLOAD FILE RCN BANK MIV',
-                        filename: 'MIV-DownloadFileRcnBank_', /// + DateTime.Now.ToString("ddMMMyyyy"),
+                        filename: 'MIV-DownloadFileRcnBank_',
                         orientation: 'landscape',
-                        // exportOptions: {
-                        //     columns: [0, 1, 3, 5]
-                        // }
                     }
                 ],
                 columnDefs: [{
                     "defaultContent": "",
                     "targets": "_all"
                 }],
-                columns: [{
-                    title: 'NO',
-                    data: null,
-                    sortable: false,
-                    className: "text-right",
-                    width: "1%",
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                }, {
-                    title: 'NAMAFILE',
-                    data: 'NAMAFILE',
-                    width: "30%",
-                }, {
-                    title: 'TGLPROSES',
-                    data: 'TGLPROSES',
-                    width: "10%",
-                }, {
-                    title: 'KETERANGAN ',
-                    data: 'KET',
-                    // className: 'text-right',
-                    width: "40%",
-                }, {
-                    data: 'USERID',
-                    width: "20%",
-                }]
+                columns: [
+                    {
+                        title: 'NO',
+                        data: null,
+                        sortable: false,
+                        className: "text-right",
+                        width: "1%",
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    { title: 'NAMAFILE', data: 'NAMAFILE', width: "30%" },
+                    { title: 'TGLPROSES', data: 'TGLPROSES', width: "10%" },
+                    { title: 'KETERANGAN ', data: 'KET', width: "40%" },
+                    { data: 'USERID', width: "20%" }
+                ]
             });
         }
 
