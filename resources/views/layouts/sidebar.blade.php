@@ -129,13 +129,10 @@
                     @elseif ($item['LEVELMENU'] == '2')
                     <ul class="nav nav-treeview" style="font-size: 10px">
                         <li class="nav-item">
-                            <a href="{{ $item['URL'] }}" {{-- class="nav-link" --}}
-                                class="nav-link {{ '/' . Request::segment(1) === $item['URL'] ? 'active' : null }}"
+                            <a href="{{ !empty($item['URL']) ? $item['URL'] : 'javascript:void(0);' }}" 
+                                class="nav-link {{ request()->is(ltrim($item['URL'], '/')) ? 'active' : '' }}"
                                 id="{{ $item['IDMENU'] }}">
-                                {{-- <i class="far fa-circle nav-icon"></i> --}}
-                                {{-- <p><u>{{ $item['NAMAMENU'] }}</u></p> --}}
-                                <p>{{ $item['NAMAMENU'] }}
-                                </p>
+                                <p>{{ $item['NAMAMENU'] }}</p>
                             </a>
                         </li>
                     </ul>
@@ -149,40 +146,46 @@
                 @else
                 {{-- dd('hello') --}}
                 <script>
-                    window.location = "/login";
+                    window.location = "/home";
                 </script>
                 @endif
 
     </div>
 
     <script type="text/javascript">
-        // const links = document.querySelectorAll('.nav-link');
+       $(document).ready(function () {
+            // Ambil URL saat ini (tanpa parameter query)
+            var currentUrl = window.location.pathname;
 
-        // if (links.length) {
-        //     links.forEach((link) => {
-        //         link.addEventListener('click', (e) => {
-        //             links.forEach((link) => {
-        //                 link.classList.remove('active');
-        //             });
-        //             e.preventDefault();
-        //             link.classList.add('active');
-        //         });
-        //     });
-        // }
+            // Untuk sidebar menu, tanpa menutupi treeview
+            $('ul.sidebar-menu a').each(function () {
+                if (this.href.includes(currentUrl)) {
+                    $(this).parent().addClass('active');
+                    $(this).closest('.treeview').addClass('menu-is-opening menu-open');
+                }
+            });
 
-        /** add active class and stay opened when selected */
-        var url = window.location;
+            // Untuk treeview menu, pastikan juga menandai parent (submenu)
+            $('ul.treeview-menu a').each(function () {
+                if (this.href.includes(currentUrl)) {
+                    $(this).closest('.treeview').addClass('menu-is-opening menu-open');
+                }
+            });
 
-        // for sidebar menu entirely but not cover treeview
-        $('ul.sidebar-menu a').filter(function() {
-            return this.href == url;
-        }).parent().addClass('active');
+            // Event handler untuk menu sidebar di dalam .nav-treeview saja
+            $('.nav-treeview .nav-link').on('click', function (e) {
+                var href = $(this).attr('href'); // Ambil nilai href dari elemen yang diklik
 
-        // for treeview
-        $('ul.treeview-menu a').filter(function() {
-            return this.href == url;
-        }).closest('.treeview').addClass('active');
+                // Jika href adalah 'javascript:void(0);', '' atau '#', munculkan alert
+                if (href === 'javascript:void(0);' || href === '' || href === '#') {
+                    e.preventDefault(); // Mencegah aksi default
+                    ShowMsgSm('Info', 'Menu sedang dibangun', 'MB_CLOSE');
+                } else {
+                    $('.nav-treeview .nav-link').removeClass('active'); // Hapus semua active terlebih dahulu
+                    $(this).addClass('active'); // Tambahkan active ke yang diklik
+                }
+            });
+        });
     </script>
-
 
 </aside>

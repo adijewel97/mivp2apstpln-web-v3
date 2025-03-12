@@ -1,6 +1,16 @@
 @extends('layouts.main')
 
 @section('container')
+<!-- Spinner Loading -->
+<div id="loadingSpinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay"></div>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -82,7 +92,8 @@
                     <label>Log Proses Dowload File RCN dan CTL Bank MIV :</label>
                 </div>
                 <div class="table-responsive">
-                    <table id="mytable" class="table table-sm yjtd-belumflagbank" style="font-size: 9px">
+                    <!-- <table id="mytable" class="table table-sm yjtd-belumflagbank" style="font-size: 9px"> -->
+                    <table id="mytable" class="display compact" style="width:100%">
                         <thead>
                             <tr>
                                 <th class="text-center">NO</th>
@@ -139,6 +150,8 @@
         TampilkanListFileRCN();
         // alert('chek 1');
         function TampilkanListFileRCN() {
+            $('#loadingSpinner').show();
+            $('.overlay').show();
             $.ajax({
                 url: "{{ route('mproses.daftar-file-ftp-rcn') }}",
                 dataType: 'json',
@@ -159,6 +172,8 @@
 
                         $("#pathfile").html(options);
                     }
+                    $('#loadingSpinner').hide();
+                    $('.overlay').hide();
                 },
                 error: function(req, status, error) {
                     try {
@@ -169,6 +184,8 @@
                         console.log("Error parsing response:", req.responseText); // Jika bukan JSON
                         ShowMsgSm('Error', 'Respon - '+req.responseText);
                     }
+                    $('#loadingSpinner').hide();
+                    $('.overlay').hide();
                 }
             });
         }
@@ -190,7 +207,8 @@
                     'processing': 'Loading...',
                     'emptyTable': 'No records are available',
                 },
-                scrollX: true,
+                scrollX: true,               
+                scrollY: 200,
                 dom: 'Blfrtip',
                 buttons: [
                     {
@@ -250,7 +268,8 @@
 
             //2 download file struk ke local device
             document.getElementById("BtnPoeseRCN").onclick = function() {
-
+                $('#loadingSpinner').show();
+                $('.overlay').show();
                 //2 ambil file list dari pilihan list browser
                 var vlistfile = [];
                 // Get the select element by its ID
@@ -280,6 +299,8 @@
                             ShowMsgSm('Error', esponse.message, 'MB_CLOSE');
                         };
                         TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
                     },
                     error: function(req, status, error) {
                         var err = req.responseText.Message;
@@ -287,6 +308,8 @@
                         ShowMsgSm('Error', 'Terjadi kesalahan saat Baca File RCN.',
                             'MB_CLOSE');
                         TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
                     }
                 });
             }
