@@ -180,6 +180,41 @@ Route::POST('/masterup3', function (Request $request) {
     return $comboup3['data'];
 })->name('master.mst_up3');
 
+//Master Bank MIV
+Route::POST('/masterbankmiv', function (Request $request) {
+    $kdbank      = 'ALL'; 
+    // $request->input('vkdbank');
+    $combobankmiv = http::withToken($request->Session()->get('_datalogin.data.token'))
+            ->post(
+                config('myconfig.variable.SVR_URL_API') . 'getmstbankmiv',
+                [
+                    'kdbank' => $kdbank 
+                ]
+            )->json();
+    // dd($comboup3);
+    return $combobankmiv;
+})->name('master.mst_bankmiv');
+
+
+//Master Bank MIV
+Route::POST('/masteruserpetugasrcn', function (Request $request) {
+    $tglawal = $request->input('tglawal');
+    $tglakhir = $request->input('tglakhir');
+    $userid = $request->input('userid');
+
+    $combobankmiv = http::withToken($request->Session()->get('_datalogin.data.token'))
+            ->post(
+                config('myconfig.variable.SVR_URL_API') . 'getmstuserlogrcnnmiv',
+                [
+                    'tglawal'  => $tglawal,
+                    'tglakhir' => $tglakhir,
+                    'userid'   => $userid
+                ]
+            )->json();
+    // dd($comboup3);
+    return $combobankmiv;
+})->name('master.mst_userpetugasrcn');
+
 // ---------------------------------------------------------------
 // -- (4) Area MIV PROSES Menu
 // ---------------------------------------------------------------
@@ -189,44 +224,18 @@ Route::POST('/masterup3', function (Request $request) {
 //=======================================================================
 Route::get('/ProsesFileRCNBank', function (Request $request) {
     try {
-        // run your code here
-        $combobankmiv = http::withToken($request->Session()->get('_datalogin.data.token'))
-            ->post(
-                config('myconfig.variable.SVR_URL_API') . 'getmstbankmiv',
-                [
-                    'kdbank' => 'ALL'
-                ]
-            )->json();
-        // dd($combobankmiv['data']);
-
-        //22 ambil master wilayah/distribusi PLN
-        $combobankmiv = http::withToken($request->Session()->get('_datalogin.data.token'))
-            ->post(
-                config('myconfig.variable.SVR_URL_API') . 'getmstbankmiv'
-            );
-
-
-        $combodistpln =  http::withToken($request->Session()->get('_datalogin.data.token'))
-            ->post(
-                config('myconfig.variable.SVR_URL_API') . 'getmstdistribusi'
-            )->json();
-        // dd($combodistpln);
-
-        $mydatacombo = [
-            'combobankmiv' => $combobankmiv['data'],
-            'combodistpln' => $combodistpln['data']
-        ];
-
         return view('mivproses/vProsesFileRCNBank', [
-            'menuname'      => 'MIV - Proses/File RCN Bank',
-            'title'         => 'Proses File RCN Bank MIV',
-            'combobankmiv'  =>  $combobankmiv['data'],
-            'mycombo'       => $mydatacombo
+            'menuname' => 'MIV - Proses/File RCN Bank',
+            'title'    => 'Proses File RCN Bank MIV'
         ]);
-    } catch (exception $e) {
-        return redirect('/login')->with(['SessionMessage' => 'Session expired, silahkan login ulang !']);
+    } catch (\Exception $e) {
+        return redirect('/login')->with([
+            'SessionMessage' => 'Session expired, silahkan login ulang!',
+            'error' => $e->getMessage()
+        ]);
     }
 });
+
 
 //test FTP http://mivp2apstpln-web-v3.test/test-ftp
 Route::get('/test-ftp', function () {
@@ -251,6 +260,9 @@ Route::get('/list-ftp-files-rcn', [CProeseMIV::class, 'get_list_ftp_files_rcn'])
 //  - jika sudah ada di db semuanya tanpa berhasil 1 pun masuk ke lunas/gagal dan jika sudah ada nama file tambahka _Rxxx = XXX = Seq
 Route::get('/proses-ftp-files-rcn', [CProeseMIV::class, 'proses_file_rcn'])->name('mproses.proses-file-ftp-rcn');
 
+//4a3  baca log data hasil download perBank/PerPetugas isi file *.rcn yang ada di database hasil download proses
+//=======================================================================
+Route::get('/cari-log-db-rcn', [CProeseMIV::class, 'cari_log_db_rcn'])->name('mproses.cari-log-db-rcn');
 
 // 4b1 tampilkan view upload kirm ulang file txt miv ke bank (bank gagal download file dan ke delete/gagal)
 //=======================================================================

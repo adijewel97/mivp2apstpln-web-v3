@@ -4,7 +4,7 @@
         {{-- class="brand-image img-circle elevation-4" --}}
         <img src="{{ asset('images/PLN-PETIR.png') }}" alt="Logo" class="brand-image img-circle elevation-4"
             style="opacity: .8">
-        <span class="brand-text font-weight-light"> <b> MIV PLN </b></span>
+        <span class="brand-text font-weight-light"> <b> PLN - MIV P2APST  </b></span>
     </a>
 
     <div class="sidebar">
