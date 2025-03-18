@@ -8,10 +8,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('adminlte320/docs/assets/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- Theme style -->
-    {{-- <link rel="stylesheet" href="{{ asset('adminlte320/dist/css/adminlte.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('adminlte320/dist/css/adminlte.min.css?v=3.2.0') }}">
 
-    {{-- Sccrolle di sidebar --}}
+    <!-- Scroll di sidebar -->
     <link rel="stylesheet" href="{{ asset('adminlte320/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
     <!-- DataTables -->
@@ -21,7 +20,6 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-
 
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{ asset('adminlte320/plugins/daterangepicker/daterangepicker.css') }}">
@@ -34,87 +32,86 @@
     <!-- Toastr -->
     <link rel="stylesheet" href="{{ asset('adminlte320/plugins/toastr/toastr.min.css') }}">
 
-    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> --}}
-    {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> --}}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-    {{-- alert boostrap from javasecript me --}}
+    <!-- Alert Bootstrap custom -->
     <script type="text/javascript" src="{{ asset('mystyle/js/myalertbs.js') }}"></script>
 
-    <!-- grafik -->
-    <!-- <script src="{{ asset('adminlte320/plugins/chart.js/Chart.min.js')  }}"></script> -->
-    <link rel="stylesheet" href="{{ asset('adminlte320/plugins//chart.js/Chart.min.css') }}">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <!-- Grafik -->
+    <link rel="stylesheet" href="{{ asset('adminlte320/plugins/chart.js/Chart.min.css') }}">
 
     <!-- Muat CSS eksternal -->
     <link rel="stylesheet" href="{{ asset('mystyle/css/style_loading.css') }}">
 
+    <!-- Tambahkan style CSS di sini -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            background-color: #f4f6f9;
+        }
 
-</head>
-{{--
-<script nonce="0fbd91f6-7ccc-40a8-8cec-0b730d09e61e">
-    (function(w, d) {
-        ! function(f, g, h, i) {
-            f[h] = f[h] || {};
-            f[h].executed = [];
-            f.zaraz = {
-                deferred: [],
-                listeners: []
-            };
-            f.zaraz.q = [];
-            f.zaraz._f = function(j) {
-                return function() {
-                    var k = Array.prototype.slice.call(arguments);
-                    f.zaraz.q.push({
-                        m: j,
-                        a: k
-                    })
-                }
-            };
-            for (const l of ["track", "set", "debug"]) f.zaraz[l] = f.zaraz._f(l);
-            f.zaraz.init = () => {
-                var m = g.getElementsByTagName(i)[0],
-                    n = g.createElement(i),
-                    o = g.getElementsByTagName("title")[0];
-                o && (f[h].t = g.getElementsByTagName("title")[0].text);
-                f[h].x = Math.random();
-                f[h].w = f.screen.width;
-                f[h].h = f.screen.height;
-                f[h].j = f.innerHeight;
-                f[h].e = f.innerWidth;
-                f[h].l = f.location.href;
-                f[h].r = g.referrer;
-                f[h].k = f.screen.colorDepth;
-                f[h].n = g.characterSet;
-                f[h].o = (new Date).getTimezoneOffset();
-                if (f.dataLayer)
-                    for (const s of Object.entries(Object.entries(dataLayer).reduce(((t, u) => ({
-                            ...t[1],
-                            ...u[1]
-                        }))))) zaraz.set(s[0], s[1], {
-                        scope: "page"
-                    });
-                f[h].q = [];
-                for (; f.zaraz.q.length;) {
-                    const v = f.zaraz.q.shift();
-                    f[h].q.push(v)
-                }
-                n.defer = !0;
-                for (const w of [localStorage, sessionStorage]) Object.keys(w || {}).filter((y => y.startsWith(
-                    "_zaraz_"))).forEach((x => {
-                    try {
-                        f[h]["z_" + x.slice(7)] = JSON.parse(w.getItem(x))
-                    } catch {
-                        f[h]["z_" + x.slice(7)] = w.getItem(x)
-                    }
-                }));
-                n.referrerPolicy = "origin";
-                n.src = "/cdn-cgi/zaraz/s.js?z=" + btoa(encodeURIComponent(JSON.stringify(f[h])));
-                m.parentNode.insertBefore(n, m)
-            };
-            ["complete", "interactive"].includes(g.readyState) ? zaraz.init() : f.addEventListener(
-                "DOMContentLoaded", zaraz.init)
-        }(w, d, "zarazData", "script");
-    })(window, document);
-</script> --}}
+        .card-custom {
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .btn-custom {
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .table-custom th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .dataTables_paginate {
+            text-align: center !important;
+        }
+
+        .dataTables_paginate .paginate_button {
+            padding: 5px 8px; /* Mengurangi padding tombol */
+            margin: 0 2px; /* Mengurangi celah antar tombol */
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: #f8f9fa;
+            display: inline-block; /* Pastikan tetap dalam satu baris */
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: #007bff;
+            color: white !important;
+            border-color: #007bff;
+        }
+
+        .dataTables_paginate .paginate_button:hover {
+            background: #ddd;
+            color: black !important;
+        }
+
+        .dataTables_paginate .paginate_button.disabled {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+    </style>
+
+
 </head>

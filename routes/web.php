@@ -1,12 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 // use Monolog\Handler\RotatingFileHandler;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\CMstDistribusi;
@@ -262,7 +260,7 @@ Route::get('/proses-ftp-files-rcn', [CProeseMIV::class, 'proses_file_rcn'])->nam
 
 //4a3  baca log data hasil download perBank/PerPetugas isi file *.rcn yang ada di database hasil download proses
 //=======================================================================
-Route::get('/cari-log-db-rcn', [CProeseMIV::class, 'cari_log_db_rcn'])->name('mproses.cari-log-db-rcn');
+Route::get('/cari-log-db-rcn', [CProeseMIV::class, 'cari_logdb_rcn'])->name('mproses.cari-logdb-filercn');
 
 // 4b1 tampilkan view upload kirm ulang file txt miv ke bank (bank gagal download file dan ke delete/gagal)
 //=======================================================================

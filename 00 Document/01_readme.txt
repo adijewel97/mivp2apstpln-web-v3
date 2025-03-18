@@ -2,6 +2,24 @@ php artisan config:clear
 php artisan cache:clear
 php artisan optimize
 
+--web
+php artisan route:clear
+php artisan cache:clear
+php artisan config:clear
+
+
+php artisan route:clear
+php artisan cache:clear
+php artisan config:clear
+php artisan route:list
+
+composer dump-autoload
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+
+
+
 
 php artisan route:list
 

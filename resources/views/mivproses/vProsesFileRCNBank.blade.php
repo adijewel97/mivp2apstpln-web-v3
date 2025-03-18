@@ -53,7 +53,7 @@
                                 <label for="" class="col-sm-2 col-form-label">
                                     Tgl. Awal/Akhir
                                 </label>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div class="input-group date" id="tglawal" data-target-input="nearest">
                                         <input type="text" class="form-control datetimepicker-input" data-target="#tglawal" />
                                         <div class="input-group-append" data-target="#tglawal" data-toggle="datetimepicker">
@@ -61,20 +61,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="col-3">
-                                    <div class="input-group date" id="tglawal" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input"
-                                            data-target="#tglawal" />
-                                        <div class="input-group-append" data-target="#tglawal"
-                                            data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                        </div>
-                                    </div>
-                                </div> -->
                                 <div class="col-sm-1 text-center">
                                     <label for="" class="col-form-label">/</label>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div class="input-group date" id="tglakhir" data-target-input="nearest">
                                         <input type="text" class="form-control datetimepicker-input"
                                             data-target="#tglakhir" />
@@ -115,10 +105,11 @@
                                 <div class="col-4">
                                 </div>
                                 <div class="col-2">
-                                    <button id='BtnFindData' name='next' type='button'
+                                    <!-- <button id='BtnFindLogdbRcn' name='next' type='button'
                                         class='btn btn-block btn-primary'><i
                                             class="fa-solid fa-magnifying-glass"></i> Cari
-                                    </button>
+                                    </button> -->
+                                    <button id='BtnFindLogdbRcn' type="button" class="btn btn-primary" data-dismiss="modal">Cari</button>
                                 </div>
                             </div>
                         </form>
@@ -161,7 +152,7 @@
                                     <div class="col-4">
                                     </div>
                                     <div class="col-4">
-                                        <button id='BtnFindDataRCN' name='next' type='button' class='btn btn-block btn-primary'><i class="fa-solid fa-magnifying-glass"></i> Tampilkan File *.RCN
+                                        <button id='BtnFindFileRCN' name='next' type='button' class='btn btn-block btn-primary'><i class="fa-solid fa-magnifying-glass"></i> Tampilkan File *.RCN
                                         </button>
                                     </div>
                                 </div>
@@ -240,17 +231,262 @@
         </div>
         <!-- /.content -->
         </div>
-        <!-- /.content-wrapper -->
+        <!-- /.content-wrapper -->  
+@endsection
 
-    <script type="text/javascript">
-        
-        $(document).ready(function() {
+@section('addfooterjs')
+    <!-- daterangepicker -->
+    <!-- Moment.js harus lebih dulu -->
+    <script src="{{ asset('adminlte320/plugins/moment/moment.min.js') }}"></script>
+    <!-- Date Range Picker -->
+    <script src="{{ asset('adminlte320/plugins/daterangepicker/daterangepicker.js') }}"></script>
+    <!-- Tempus Dominus (DateTime Picker) -->
+    <script src="{{ asset('adminlte320/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+
+    <script>
+       $(document).ready(function() {
             TampilkanListFileRCN();
             combo_bankmiv();
             $('#pilihauserid').empty();
-            $('#pilihauserid').append(new Option('PILIH SEMUA', 'ALL'));
-            // alert('chek 1');          
-        });
+            $('#pilihauserid').append(new Option('PILIH SEMUA', 'SEMUA'));
+
+            // Inisialisasi DateTimePicker
+            $('#tglawal').datetimepicker({
+                format: 'DD MMMM YYYY'
+            });
+
+            $('#tglakhir').datetimepicker({
+                format: 'DD MMMM YYYY'
+            });
+
+            // Isi tanggal hari ini dengan metode DateTimePicker
+            let firstdate = moment().startOf('month');
+            let nowdate = moment();
+
+            $('#tglawal').datetimepicker('date', firstdate);
+            $('#tglakhir').datetimepicker('date', nowdate);
+
+            // Set default value dropdown
+            $('#pilihauserid').val('SEMUA');
+
+            // Panggil data awal
+            combo_userpetugas();
+
+            // Event listener perubahan tanggal
+            $('#tglawal, #tglakhir').on('change.datetimepicker', function() {
+                combo_userpetugas();
+            });
+
+            // Event listener untuk dropdown user
+            $('#pilihauserid').on('focus click', function() {
+                combo_userpetugas();
+            });
+
+            //1 cari file RCN yang akan di tampilkan di list dari ftp MIV kiriman Bank
+            document.getElementById("BtnFindFileRCN").onclick = function() {
+                TampilkanListFileRCN();
+                $("#tbodyid").empty();
+            }
+
+            //2 download file struk ke local device
+            document.getElementById("BtnPoeseRCN").onclick = function() {
+                $('#loadingSpinner').show();
+                $('.overlay').show();
+
+                // Ambil file list dari pilihan list browser
+                var vlistfile = [];
+                var selectElement = document.getElementById("pathfile");
+
+                // Jika tidak ada file yang dipilih, tampilkan pesan error dan hentikan proses
+                if (selectElement.options.length === 0) {
+                    ShowMsgSm('Info', 'Tidak ada file di FTP yang akan diproses atau Clik Tombol Tampilkan File *.RCN.', 'MB_CLOSE');
+                    $('#loadingSpinner').hide();
+                    $('.overlay').hide();
+                    return;
+                }
+
+                // Loop melalui opsi yang ada
+                for (var i = 0; i < selectElement.options.length; i++) {
+                    vlistfile.push(selectElement.options[i].value);
+                }
+
+                $.ajax({
+                    url: "{{ route('mproses.proses-file-ftp-rcn') }}",
+                    dataType: 'json',
+                    data: {
+                        vnamafile: vlistfile.join(", ")
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if (response.status === '200') {
+                            ShowMsgSm('Sukses', 'Jumlah file yang diproses sebanyak = ' + response.downloaded_files.length + ' File.', 'MB_CLOSE');
+                            listdata = JSON.stringify(response.info_progres_ctl.data);
+                            tampilmydatatable(listdata);
+                        } else {
+                            tampilmydatatable([]);
+                            ShowMsgSm('Error', response.message, 'MB_CLOSE');
+                        }
+                        TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
+                    },
+                    error: function(req, status, error) {
+                        console.log(req.responseJSON);
+                        ShowMsgSm('Error', 'Terjadi kesalahan saat Baca File RCN.', 'MB_CLOSE');
+                        TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
+                    }
+                });
+            };
+
+            //3 Tampilkan log user download RCN
+            document.getElementById("BtnFindLogdbRcn").onclick = function() {
+                $('#loadingSpinner').show();
+                $('.overlay').show();
+
+                let tglAwalPicker = $('#tglawal').datetimepicker('date');
+                let tglAkhirPicker = $('#tglakhir').datetimepicker('date');
+                if (!tglAwalPicker || !tglAkhirPicker) {
+                    console.log('Tanggal tidak boleh kosong!');
+                    ShowMsgSm('Error', 'Silakan pilih tanggal awal dan akhir!');
+                    return;
+                }
+                let tglawal  = tglAwalPicker.format('YYYYMMDD');
+                let tglakhir = tglAkhirPicker.format('YYYYMMDD');
+                let userid   = $('#pilihauserid').val();
+                let kdbank   = $('#pilihkdbankmiv').val();
+                    // kdbank   = kdbank.split("|")[0];
+                    kdbank = kdbank.split("|")[0] === 'ALL' ? 'SEMUA' : kdbank.split("|")[0];
+
+                console.log('Tanggal Awal  a:', tglawal);
+                console.log('Tanggal Akhir a:', tglakhir);
+                console.log('userid        a:', userid);
+                console.log('kdbank        a:', kdbank);
+
+                // alert('test 1 ' + tglakhir);
+
+                $.ajax({
+                    url: "{{ route('mproses.cari-logdb-filercn') }}",
+                    dataType: 'json',
+                    type: "GET",
+                    data: {
+                        vuserid     : userid,
+                        vtglawal    : tglawal,
+                        vtglakhir   : tglakhir,
+                        vkdbank     : kdbank 
+                    },
+                    success: function(response) {
+
+                        if (response) {
+                            console.log("DATA DB RCN", response);
+                            console.log("DATA DB RCN DATA", response.data);
+                        } else {
+                            console.log("Response tidak ditemukan atau undefined");
+                        }
+
+                        if (response.kode === 200) {
+                        // Tampilkan modal
+                        $('.bd-example-modal-lg').modal('show');
+
+                        if (response.data && response.data.length > 0) {
+                            listdata = JSON.stringify(response.data);
+                            console.log("Data ditemukan:", listdata);
+                            tampilmydatatable(listdata);
+                        } else {
+                            listdata = '[]';
+                            console.warn("Data kosong, tabel tetap ditampilkan.");
+                            ShowMsgSm('Info', 'Data tidak ditemukan.', 'MB_CLOSE');
+                            tampilmydatatable(listdata);
+                        }
+
+                        // Tutup modal setelah memastikan tabel sudah ter-update
+                        setTimeout(function () {
+                            $('.bd-example-modal-lg').modal('hide');
+                        }, 1000); // 2 detik sebelum modal di-hide
+                    } else {
+                        console.error("Terjadi error:", response.message);
+                        tampilmydatatable('[]'); // Pastikan tabel tetap diperbarui dengan data kosong
+                        ShowMsgSm('Error', response.message, 'MB_CLOSE');
+
+                        // Pastikan modal tetap terbuka untuk menunjukkan pesan error
+                        $('.bd-example-modal-lg').modal('show');
+                    }
+
+                        TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
+                    },
+                    error: function(req, status, error) {
+                        console.log(req.responseJSON);
+                        ShowMsgSm('Error', 'Terjadi kesalahan saat Baca Log DB RCN.', 'MB_CLOSE');
+                        // TampilkanListFileRCN();
+                        $('#loadingSpinner').hide();
+                        $('.overlay').hide();
+                    }
+                });
+            };
+       });
+
+        function combo_userpetugas() {
+            console.log("combo_userpetugas() dipanggil!");
+
+            let tglAwalPicker = $('#tglawal').datetimepicker('date');
+            let tglAkhirPicker = $('#tglakhir').datetimepicker('date');
+
+            if (!tglAwalPicker || !tglAkhirPicker) {
+                console.log('Tanggal tidak boleh kosong!');
+                ShowMsgSm('Error', 'Silakan pilih tanggal awal dan akhir!');
+                return;
+            }
+
+            let vtglawal  = tglAwalPicker.format('YYYYMMDD');
+            let vtglakhir = tglAkhirPicker.format('YYYYMMDD');
+            let vuserid   = $('#pilihauserid').val();
+
+            console.log('Tanggal Awal:', vtglawal);
+            console.log('Tanggal Akhir:', vtglakhir);
+            console.log('vuserid      :', vuserid);
+
+            $.when(
+                $.ajax({
+                    url: "{{ route('master.mst_userpetugasrcn') }}",
+                    dataType: 'json',
+                    type: 'POST',
+                    data: {
+                        tglawal: vtglawal,
+                        tglakhir: vtglakhir,
+                        userid: vuserid
+                    }
+                })
+            ).done(function(respon) {
+                console.log("Data diterima:", respon);
+
+                let selectedValue = $('#pilihauserid').val(); 
+                let dropdown = $("#pilihauserid");
+
+                dropdown.empty(); 
+
+                if (dropdown.find('option[value="SEMUA"]').length === 0) {
+                    dropdown.append('<option value="SEMUA">PILIH SEMUA</option>');
+                }
+
+                if (respon.data && Array.isArray(respon.data) && respon.data.length > 0) {
+                    respon.data.forEach(function(object) {
+                        if (object.USERID && object.USERID.toUpperCase() !== 'SEMUA') {
+                            dropdown.append(`<option value="${object.USERID}">${object.USERID}</option>`);
+                        }
+                    });
+                }
+
+                dropdown.val(selectedValue && dropdown.find(`option[value="${selectedValue}"]`).length ? selectedValue : 'SEMUA').trigger('change');
+
+                console.log("Dropdown berhasil diperbarui");
+            }).fail(function(req) {
+                console.error("AJAX gagal:", req);
+            });
+        }
+
 
         function combo_bankmiv() {
             $.ajax({
@@ -280,10 +516,10 @@
                     try {
                         let errResponse = JSON.parse(req.responseText);
                         console.log("Error Response:", errResponse.message);
-                        ShowMsgSm('Error', 'Respon - ' + errResponse.message);
+                        ShowMsgSm('Error', 'Session User Habis, Silahkan login Ulang. ' + errResponse.message, 'MB_CLOSE');
                     } catch (e) {
                         console.log("Error parsing response:", req.responseText);
-                        ShowMsgSm('Error', 'Respon - ' + req.responseText);
+                        ShowMsgSm('Error', 'Session User Habis, Silahkan login Ulang. ' + req.responseText, 'MB_CLOSE');
                     }
                 }
             });
@@ -319,10 +555,10 @@
                     try {
                         let errResponse = JSON.parse(req.responseText); // Parse JSON
                         console.log("Error Response:", errResponse.message); // Ambil "message"
-                        ShowMsgSm('Error','Respon - '+errResponse.message);
+                        ShowMsgSm('Error','Session User Habis, Silahkan login Ulang. '+errResponse.message, 'MB_CLOSE');
                     } catch (e) {
                         console.log("Error parsing response:", req.responseText); // Jika bukan JSON
-                        ShowMsgSm('Error', 'Respon - '+req.responseText);
+                        ShowMsgSm('Error', 'Session User Habis, Silahkan login Ulang. '+req.responseText, 'MB_CLOSE');
                     }
                     $('#loadingSpinner').hide();
                     $('.overlay').hide();
@@ -331,25 +567,42 @@
         }
 
         function tampilmydatatable(listdata) {
-            // var json = '[{"company_id":"1","company_name":"schneider"}]';
-            var json = listdata;
-            console.log('aku chek : ' + json);
+            if (!listdata || listdata === '[]') {
+                console.log("Data kosong, tidak menampilkan tabel.");
+                listdata = '[]'; // Pastikan string kosong tetap JSON valid
+            }
+
+            let jsonData;
+            try {
+                jsonData = JSON.parse(listdata);
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                jsonData = [];
+            }
+
+            console.log('Cek Data:', jsonData); // Debugging
+
+            $('#mytable').DataTable().clear().destroy(); // Bersihkan tabel sebelum load data baru
+
             $('#mytable').DataTable({
-                data: JSON.parse(json),
+                data: jsonData,
                 processing: true,
                 destroy: true,
                 autoWidth: true,
                 searching: true,
-                paging: true, // Aktifkan paging
-                pageLength: 10, // Atur jumlah baris per halaman (opsional)
+                paging: true,
+                pageLength: 10,
                 language: {
                     'loadingRecords': '&nbsp;',
                     'processing': 'Loading...',
                     'emptyTable': 'No records are available',
                 },
-                scrollX: true,               
+                scrollX: true,
                 scrollY: 200,
-                dom: 'Blfrtip',
+                // dom: 'Blfrtip',
+                dom:    '<"row mb-3"<"col-md-6"B><"col-md-6"f>>' +  
+                        '<"row"<"col-md-12"tr>>' +  
+                        '<"row mt-3"<"col-md-6"l><"col-md-6"p>>',
                 buttons: [
                     {
                         extend: 'excelHtml5',
@@ -391,213 +644,13 @@
                             return meta.row + meta.settings._iDisplayStart + 1;
                         }
                     },
-                    { title: 'NAMAFILE', data: 'NAMAFILE', width: "30%" },
-                    { title: 'TGLPROSES', data: 'TGLPROSES', width: "10%" },
+                    { title: 'NAMAFILE', data: 'NAMAFILE', width: "40%" },
+                    { title: 'TGLPROSES', data: 'TGLPROSES', width: "20%", className: "text-center"  },
                     { title: 'KETERANGAN ', data: 'KET', width: "40%" },
-                    { data: 'USERID', width: "20%" }
+                    { title: 'USERID', data: 'USERID', width: "20%" }
                 ]
             });
         }
 
-        $(function() {
-            //1 cari file RCN yang akan di tampilkan di list dari ftp MIV kiriman Bank
-            document.getElementById("BtnFindDataRCN").onclick = function() {
-                TampilkanListFileRCN();
-                $("#tbodyid").empty();
-            }
-
-            //2 download file struk ke local device
-            document.getElementById("BtnPoeseRCN").onclick = function() {
-                $('#loadingSpinner').show();
-                $('.overlay').show();
-
-                // Ambil file list dari pilihan list browser
-                var vlistfile = [];
-                var selectElement = document.getElementById("pathfile");
-
-                // Jika tidak ada file yang dipilih, tampilkan pesan error dan hentikan proses
-                if (selectElement.options.length === 0) {
-                    ShowMsgSm('Info', 'Tidak ada file di FTP yang akan diproses atau Clik Tombol Tampilkan File *.RCN.', 'MB_CLOSE');
-                    $('#loadingSpinner').hide();
-                    $('.overlay').hide();
-                    return;
-                }
-
-                // Loop melalui opsi yang ada
-                for (var i = 0; i < selectElement.options.length; i++) {
-                    vlistfile.push(selectElement.options[i].value);
-                }
-
-                $.ajax({
-                    url: "{{ route('mproses.proses-file-ftp-rcn') }}",
-                    dataType: 'json',
-                    data: {
-                        vnamafile: vlistfile.join(", ")
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        if (response.status === '200') {
-                            ShowMsgSm('Sukses', 'Jumlah file yang diproses sebanyak = ' + response.downloaded_files.length + ' File.', 'MB_CLOSE');
-                            listdata = JSON.stringify(response.info_progres_ctl.data);
-                            tampilmydatatable(listdata);
-                        } else {
-                            ShowMsgSm('Error', response.message, 'MB_CLOSE');
-                        }
-                        TampilkanListFileRCN();
-                        $('#loadingSpinner').hide();
-                        $('.overlay').hide();
-                    },
-                    error: function(req, status, error) {
-                        console.log(req.responseJSON);
-                        ShowMsgSm('Error', 'Terjadi kesalahan saat Baca File RCN.', 'MB_CLOSE');
-                        TampilkanListFileRCN();
-                        $('#loadingSpinner').hide();
-                        $('.overlay').hide();
-                    }
-                });
-            };
-
-            //3 Tampilkan log user download RCN
-            document.getElementById("BtnFindData").onclick = function() {
-                $('#loadingSpinner').show();
-                $('.overlay').show();
-
-                // Ambil file list dari pilihan list browser
-                var vlistfile = [];
-                var selectElement = document.getElementById("pathfile");
-
-                // Jika tidak ada file yang dipilih, tampilkan pesan error dan hentikan proses
-                if (selectElement.options.length === 0) {
-                    ShowMsgSm('Info', 'Tidak ada file di FTP yang akan diproses atau Clik Tombol Tampilkan File *.RCN.', 'MB_CLOSE');
-                    $('#loadingSpinner').hide();
-                    $('.overlay').hide();
-                    return;
-                }
-
-                // Loop melalui opsi yang ada
-                for (var i = 0; i < selectElement.options.length; i++) {
-                    vlistfile.push(selectElement.options[i].value);
-                }
-
-                $.ajax({
-                    url: "{{ route('mproses.cari-log-db-rcn') }}",
-                    dataType: 'json',
-                    data: {
-                        vnamafile: vlistfile.join(", ")
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        if (response.status === '200') {
-                            ShowMsgSm('Sukses', 'Jumlah file yang diproses sebanyak = ' + response.downloaded_files.length + ' File.', 'MB_CLOSE');
-                            listdata = JSON.stringify(response.info_progres_ctl.data);
-                            tampilmydatatable(listdata);
-                        } else {
-                            ShowMsgSm('Error', response.message, 'MB_CLOSE');
-                        }
-                        TampilkanListFileRCN();
-                        $('#loadingSpinner').hide();
-                        $('.overlay').hide();
-                    },
-                    error: function(req, status, error) {
-                        console.log(req.responseJSON);
-                        ShowMsgSm('Error', 'Terjadi kesalahan saat Baca File RCN.', 'MB_CLOSE');
-                        TampilkanListFileRCN();
-                        $('#loadingSpinner').hide();
-                        $('.overlay').hide();
-                    }
-                });
-            };
-            
-        });
-    </script>    
-@endsection
-
-@section('addfooterjs')
-    <!-- daterangepicker -->
-    <!-- InputMask -->
-    <script src="{{ asset('adminlte320/plugins/moment/moment.min.js') }}"></script>
-    {{-- <script src="{{ asset('adminlte320/plugins/inputmask/jquery.inputmask.min.js') }}"></script> --}}
-    <!-- date-range-picker -->
-    <script src="{{ asset('adminlte320/plugins/daterangepicker/daterangepicker.js') }}"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="{{ asset('adminlte320/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
-
-    <script>
-        $(document).ready(function() {
-            // Inisialisasi DateTimePicker
-            $('#tglawal').datetimepicker({
-                format: 'DD MMMM YYYY'
-            });
-
-            $('#tglakhir').datetimepicker({
-                format: 'DD MMMM YYYY'
-            });
-
-            // Isi tanggal hari ini
-            let firstdate = moment().startOf('month').format('01 MMMM YYYY');
-            let nowdate = moment().format('DD MMMM YYYY');
-            $("#tglawal").find("input").val(firstdate);
-            $("#tglakhir").find("input").val(nowdate);
-
-            // Event listener perubahan tanggal
-            $('#tglawal').on('change.datetimepicker', function() {
-                setTimeout(combo_userpetugas, 200);
-            });
-
-            $('#tglakhir').on('change.datetimepicker', function() {
-                setTimeout(combo_userpetugas, 200);
-            });
-
-            function combo_userpetugas() {
-                let vtglawal  = $('#tglawal').datetimepicker('date').format('YYYYMMDD');
-                let vtglakhir = $('#tglakhir').datetimepicker('date').format('YYYYMMDD');
-                let vuserid   = $('#pilihauserid').val(); // Tambahkan # untuk ID
-
-                if (vtglawal && vtglakhir) {
-                    console.log('Tanggal Awal:', vtglawal);
-                    console.log('Tanggal Akhir:', vtglakhir);
-
-                    $.ajax({
-                        url: "{{ route('master.mst_userpetugasrcn') }}",
-                        dataType: 'json',
-                        type: 'POST',
-                        data: {
-                            tglawal : vtglawal,
-                            tglakhir: vtglakhir,
-                            userid  : vuserid
-                        },
-                        success: function(respon) {
-                            console.log("Data diterima:", respon);
-
-                            if (respon.status === 'Sukses' && Array.isArray(respon.data)) {
-                                let options = ""; 
-
-                                respon.data.forEach(function(object) {
-                                    const vvalue = object.KODE_BANK + "|" + object.KODE_ERP;
-                                    const voption = object.NAMA_BANK;
-                                    
-                                    options += `<option value="${vvalue}">${voption}</option>`;
-                                });
-
-                                $("#pilihauserid").html(options);
-                            } else {
-                                console.log("Format data tidak sesuai:", respon);
-                                ShowMsgSm('Error', 'Format data dari server tidak sesuai.');
-                            }
-                        },
-                        error: function(req, status, error) {
-                            try {
-                                let errResponse = JSON.parse(req.responseText);
-                                console.log("Error Response:", errResponse.message);
-                                ShowMsgSm('Error', 'Respon - ' + errResponse.message);
-                            } catch (e) {
-                                console.log("Error parsing response:", req.responseText);
-                                ShowMsgSm('Error', 'Respon - ' + req.responseText);
-                            }
-                        }
-                    });
-                }
-            }
-        });
     </script>
 @endsection
