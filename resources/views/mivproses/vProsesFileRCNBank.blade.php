@@ -183,39 +183,30 @@
                     <div class="form-group">
                         <label>Log Proses Dowload File RCN dan CTL Bank MIV :</label>
                     </div>
-                    <div class="table-responsive">
-                        <!-- <table id="mytable" class="table table-sm yjtd-belumflagbank" style="font-size: 9px"> -->
-                        <table id="mytable" class="display compact" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">NO</th>
-                                    <th class="text-center">NAMAFILE</th>
-                                    <th class="text-center">TGLPROSES</th>
-                                    <th class="text-center">KETERANGAN</th>
-                                    <th class="text-center">USERID</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyid">
-                            </tbody>
-                            <!-- <tfoot style="background-color: #a5a7a9">
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>TOTAL</th>
-                                    <th id="tJMLBELUMLUNAS" class="text-right">0</th>
-                                    <th id="tDATAUNPENDING" class="text-right">0</th>
-                                    <th id="tRPTAG" class="text-right">0</th>
-                                    <th id="tDATALBIH4LBR" class="text-right">0</th>
-                                    <th id="tLAMA_HARI" class="text-right">0</th>
-                                    <th id="f" class="text-right"></th>
-                                </tr>
-                            </tfoot> -->
-                        </table>
-                    </div>
+                    <fieldset class="border p-3">
+                        <div class="col-2 mb-3">
+                            <button id="exportExcel" type="button" class="btn btn-success btn-block">
+                                <i class="fa fa-file-excel-o"></i> Excel
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <!-- <table id="mytable" class="table table-sm yjtd-belumflagbank" style="font-size: 9px"> -->
+                            <table id="mytable" class="display compact" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">NO</th>
+                                        <th class="text-center">NAMAFILE</th>
+                                        <th class="text-center">TGLPROSES</th>
+                                        <th class="text-center">KETERANGAN</th>
+                                        <th class="text-center">USERID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyid">
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
 
                     {{-- <div id="pdfContainer"></div> --}}
 
@@ -245,6 +236,7 @@
 
     <script>
        $(document).ready(function() {
+           document.querySelector("body").style.fontFamily;            
             TampilkanListFileRCN();
             combo_bankmiv();
             $('#pilihauserid').empty();
@@ -582,53 +574,28 @@
 
             console.log('Cek Data:', jsonData); // Debugging
 
-            $('#mytable').DataTable().clear().destroy(); // Bersihkan tabel sebelum load data baru
+            // Bersihkan DataTable sebelum diinisialisasi ulang
+            $('#mytable').DataTable().clear().destroy();
 
-            $('#mytable').DataTable({
+            var table = $('#mytable').DataTable({
                 data: jsonData,
                 processing: true,
-                destroy: true,
-                autoWidth: true,
+                autoWidth: false,
                 searching: true,
                 paging: true,
                 pageLength: 10,
+                lengthChange: true,
+                info: true,
                 language: {
                     'loadingRecords': '&nbsp;',
                     'processing': 'Loading...',
-                    'emptyTable': 'No records are available',
+                    'emptyTable': 'No records available',
                 },
                 scrollX: true,
                 scrollY: 200,
-                // dom: 'Blfrtip',
-                dom:    '<"row mb-3"<"col-md-6"B><"col-md-6"f>>' +  
-                        '<"row"<"col-md-12"tr>>' +  
-                        '<"row mt-3"<"col-md-6"l><"col-md-6"p>>',
-                buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        text: '<i class="fa fa-file-excel"></i> Excel',
-                        className: 'dt-button buttons-excel buttons-html5 btn btn-xs btn-success',
-                        footer: true,
-                        title: 'DAFTAR PROSES DOWNLOAD FILE RCN BANK MIV',
-                        filename: 'MIV-DownloadFileRcnBank_',
-                        exportOptions: {
-                            columns: "thead th:not(.noExport)",
-                            rows: function(indx, rowData, domElement) {
-                                return $(domElement).css("display") != "none";
-                            }
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        footer: true,
-                        text: '<i class="fa fa-file-pdf"></i> PDF',
-                        className: 'dt-button buttons-excel buttons-html5 btn btn-xs btn-danger',
-                        footer: true,
-                        title: 'DAFTAR PROSES DOWNLOAD FILE RCN BANK MIV',
-                        filename: 'MIV-DownloadFileRcnBank_',
-                        orientation: 'landscape',
-                    }
-                ],
+                responsive: true,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                pageLength: 10,
                 columnDefs: [{
                     "defaultContent": "",
                     "targets": "_all"
@@ -639,18 +606,29 @@
                         data: null,
                         sortable: false,
                         className: "text-right",
-                        width: "1%",
+                        width: "5%",
                         render: function(data, type, row, meta) {
                             return meta.row + meta.settings._iDisplayStart + 1;
                         }
                     },
-                    { title: 'NAMAFILE', data: 'NAMAFILE', width: "40%" },
-                    { title: 'TGLPROSES', data: 'TGLPROSES', width: "20%", className: "text-center"  },
-                    { title: 'KETERANGAN ', data: 'KET', width: "40%" },
-                    { title: 'USERID', data: 'USERID', width: "20%" }
-                ]
+                    { title: 'NAMAFILE', data: 'NAMAFILE', width: "35%" },
+                    { title: 'TGLPROSES', data: 'TGLPROSES', width: "20%", className: "text-center" },
+                    { title: 'KETERANGAN', data: 'KET', width: "30%" },
+                    { title: 'USERID', data: 'USERID', width: "10%" }
+                ],
+                // dom: 'Bfrtip',
+                dom: '<"row"<"col-md-6"l><"col-md-6 text-end"f>>' +
+                        '<"row"<"col-md-12"tr>>' +
+                        '<"row mt-2"<"col-md-6"i><"col-md-6 text-end"p>>',
+                pagingType: "simple_numbers" // Gunakan format paging yang lebih rapi
+            });
+
+            // Tombol Export Excel di luar tabel
+            $('#exportExcel').off('click').on('click', function () {
+                table.button('.buttons-excel').trigger();
             });
         }
+
 
     </script>
 @endsection

@@ -87,31 +87,18 @@
             text-align: center !important;
         }
 
-        .dataTables_paginate .paginate_button {
-            padding: 5px 8px; /* Mengurangi padding tombol */
-            margin: 0 2px; /* Mengurangi celah antar tombol */
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background: #f8f9fa;
-            display: inline-block; /* Pastikan tetap dalam satu baris */
+        /* Datatable style */
+        .dataTables_paginate .pagination {
+            margin: 0 !important;
+            padding: 0 !important;
+            gap: 2px; /* Atur jarak antar tombol */
         }
 
-        .dataTables_paginate .paginate_button.current {
-            background: #007bff;
-            color: white !important;
-            border-color: #007bff;
+        .dataTables_paginate .pagination li {
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        .dataTables_paginate .paginate_button:hover {
-            background: #ddd;
-            color: black !important;
-        }
-
-        .dataTables_paginate .paginate_button.disabled {
-            background: #e9ecef;
-            color: #6c757d;
-        }
     </style>
-
 
 </head>

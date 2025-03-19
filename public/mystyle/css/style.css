@@ -94,32 +94,43 @@ h2 {
     transition: .5s;
 }
 
-.input-box input:focus~label,
-.input-box input:valid~label{
-    top:-5px ;
-}
-
-.input-box input:active~input{
-    background: transparent;
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+    top: -5px;
 }
 
 .input-box input {
     width: 100%;
     height: 50px;
-    color: #d1eb10;
+    color: #d1eb10 !important; /* Warna teks tetap kuning */
     background: transparent;
     border: none;
     outline: none;
     font-size: 1em;
     padding: 0 35px 0 5px;
+    caret-color: #d1eb10; /* Warna kursor */
 }
 
-.input-box .icon {
-    position: absolute;
-    right: 5px;
-    color: #fff;
-    font-size: 1.2em;
-    line-height: 57px;
+/* Saat input dalam keadaan fokus */
+.input-box input:focus {
+    color: #d1eb10 !important;
+}
+
+/* Autofill fix agar tetap kuning */
+.input-box input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-text-fill-color: #d1eb10 !important;
+}
+
+/* Jika autofill masih berubah ke warna hitam */
+.input-box input:-webkit-autofill,
+.input-box input:-webkit-autofill:hover,
+.input-box input:-webkit-autofill:focus,
+.input-box input:-webkit-autofill:active {
+    background: transparent !important;
+    -webkit-text-fill-color: #d1eb10 !important;
+    color: #d1eb10 !important;
+    transition: background-color 9999s ease-in-out 0s;
 }
 
 .remember-forgate {
