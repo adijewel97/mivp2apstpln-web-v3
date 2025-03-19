@@ -12,6 +12,12 @@
   <link rel="stylesheet" href="{{asset('adminlte320/dist')}}/css/adminlte.min.css?v=3.2.0">
   <link rel="stylesheet" href="{{ asset('mystyle/css/style.css') }}">
   <script src="{{ asset('mystyle/js/myalertbs.js') }}"></script>
+  <!-- <style>
+    .custom-btn {
+      min-width: calc(50%); /* Tambahkan 20px ekstra */
+      padding: 5px 15px; /* Atur padding agar tetap proporsional */
+    }
+  </style> -->
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -60,7 +66,9 @@
       <form action="/loginuser" method="post" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        <h2>LOGIN</h2>
+        <div class="col-12 mb-4">
+          <h2>LOGIN</h2>
+        </div>
         <p class="aplikasi">Monitoring & Laporan MIV P2APST</p>
         <div class="input-box">
           <span class="icon"><ion-icon name="mail"></ion-icon></span>
@@ -73,10 +81,12 @@
           <label>Password</label>
         </div>
         <div class="remember-forgate">
-          <label><input type="checkbox"> Remember me </label><a href="">Forgot Password ?</a>
+          <label><input type="checkbox"> Ingatkan </label><a href="">Lupa Password ?</a>
         </div>
-        <button class="btn" type="submit">Login</button>
-        <button type="button" class="btn btn-default" id="btnmsg" hidden data-toggle="modal" data-target="#bs-alert2">Launch Default Modal</button>
+        <div class="col-12 d-flex justify-content-center" style="padding-top: 25px;">
+            <button class="btn btn-primary mx-2" type="submit" style="max-width: 200px; width: 50%;">Login</button>
+            <button type="button" class="btn btn-default d-none" id="btnmsg" data-toggle="modal" data-target="#bs-alert2">Launch Default Modal</button>
+        </div>
         <div class="register-link">
           <p>Don't have an accunt ? <a href="">Register</a></p>
         </div>

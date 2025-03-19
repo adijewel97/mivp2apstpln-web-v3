@@ -171,8 +171,11 @@ h2 {
     font-size: .9em;
     color: #fff;
     text-align: center;
-    margin: 25px 0 10px;
+    margin: 20px 0 10px; /* Kurangi margin-top dari 25px ke 10px */
+    position: relative;
+    top: -30%; /* Naikkan teks sebesar 30% */
 }
+
 
 .register-link p a {
     color: #fff;
